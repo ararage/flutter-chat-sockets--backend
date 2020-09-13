@@ -14,16 +14,16 @@ const crearUsuario = async (req, res=response) => {
                 message: 'Email ya registrado'
             })
         }
-        const usuario = new Usuario(req.body);
+        const usuarioDB = new Usuario(req.body);
         // Encriptar contraseña
         const salt = bcrypt.genSaltSync();
-        usuario.password = bcrypt.hashSync(password, salt);
-        await usuario.save();
+        usuarioDB.password = bcrypt.hashSync(password, salt);
+        await usuarioDB.save();
         // Generar JWT
-        const token = await generarJWT(usuario.id);
+        const token = await generarJWT(usuarioDB.id);
         return res.json({
             ok: true,
-            usuario,
+            usuarioDB,
             token
         });
     }catch{
