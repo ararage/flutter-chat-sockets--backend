@@ -1,6 +1,6 @@
 const { io } = require('../index');
 const { comprobarJWT } = require('../helpers/jwt');
-const { usuarioConectado, usuarioDesconectado } = require('../controllers/socket'); 
+const { usuarioConectado, usuarioDesconectado, saveMessage } = require('../controllers/socket'); 
 
 // Socket Messages
 io.on('connection', client => {
@@ -15,6 +15,18 @@ io.on('connection', client => {
 
     // Client Authenticated
     usuarioConectado(uuid);
+
+    // Login the user to an specific chat-group
+    // Global Chat-Group, client.uuid
+    client.join(uuid);
+
+    // Listen from the client the private message
+    client.on('private-message', async (payload)=>{
+        // TODO: Save message
+        await saveMessage(payload);
+        // Emit message to chanel
+        io.to( payload.to ).emit('private-message', payload);
+    });
     
     client.on('disconnect', () => { 
         console.log("Cliente Desconectado");
